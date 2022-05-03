@@ -1,0 +1,379 @@
+local Library = {}
+
+function Library.NewLibrary()
+	local Flare = Instance.new("ScreenGui")
+	local Top = Instance.new("Frame")
+	local Main = Instance.new("Frame")
+	local Pages = Instance.new("Frame")
+	local TaskBar = Instance.new("Frame")
+	local Titems = Instance.new("ScrollingFrame")
+	local UIListLayout = Instance.new("UIListLayout")
+	local Roblox = Instance.new("ImageLabel")
+	Flare.Name = "Flare"
+	Flare.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	Flare.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	Flare.ResetOnSpawn = false
+	Top.Name = "Top"
+	Top.Parent = Flare
+	Top.AnchorPoint = Vector2.new(0.5, 0.5)
+	Top.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Top.Position = UDim2.new(0.5, 0, 0.377999991, 0)
+	Top.Size = UDim2.new(0, 393, 0, 32)
+	Main.Name = "Main"
+	Main.Parent = Top
+	Main.BackgroundColor3 = Color3.fromRGB(212, 74, 74)
+	Main.BorderColor3 = Color3.fromRGB(226, 79, 79)
+	Main.BorderSizePixel = 4
+	Main.Position = UDim2.new(-0.00110358, 0, 0.0795523524, 0)
+	Main.Size = UDim2.new(0, 393, 0, 198)
+	Pages.Name = "Pages"
+	Pages.Parent = Main
+	Pages.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Pages.BackgroundTransparency = 1.000
+	Pages.Size = UDim2.new(0, 393, 0, 198)
+	TaskBar.Name = "TaskBar"
+	TaskBar.Parent = Main
+	TaskBar.BackgroundColor3 = Color3.fromRGB(194, 73, 73)
+	TaskBar.BackgroundTransparency = 1.000
+	TaskBar.BorderColor3 = Color3.fromRGB(226, 79, 79)
+	TaskBar.BorderSizePixel = 4
+	TaskBar.Size = UDim2.new(0, 126, 0, 198)
+	local Menu = TaskBar
+	Titems.Name = "Titems"
+	Titems.Parent = TaskBar
+	Titems.Active = true
+	Titems.AnchorPoint = Vector2.new(0.5, 0.5)
+	Titems.BackgroundColor3 = Color3.fromRGB(194, 73, 73)
+	Titems.BackgroundTransparency = 1.000
+	Titems.BorderColor3 = Color3.fromRGB(194, 73, 73)
+	Titems.Position = UDim2.new(0.5, 0, 0.5, 0)
+	Titems.Size = UDim2.new(0, 114, 0, 182)
+	Titems.ScrollBarThickness = 0
+	Titems.ScrollingEnabled = false
+	Titems.VerticalScrollBarPosition = Enum.VerticalScrollBarPosition.Left
+	UIListLayout.Parent = Titems
+	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	UIListLayout.Padding = UDim.new(0, 1)
+	Roblox.Name = "Roblox"
+	Roblox.Parent = Flare
+	Roblox.AnchorPoint = Vector2.new(0.5, 0.5)
+	Roblox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Roblox.BackgroundTransparency = 1.000
+	Roblox.Position = UDim2.new(0.798953652, 0, 0.92789036, 0)
+	Roblox.Rotation = -14.000
+	Roblox.Size = UDim2.new(0, 90, 0, 90)
+	Roblox.Image = "http://www.roblox.com/asset/?id=1246803694"
+	local function HideTaskbar() 
+		local script = Instance.new('LocalScript', Main)
+
+		script.Parent.TaskBar.Size = UDim2.new(0,0,0,198)
+		script.Parent.TaskBar.BackgroundTransparency = 1
+	end
+	coroutine.wrap(HideTaskbar)()
+	local function Drag()
+		local script = Instance.new('LocalScript', Top)
+
+		local UserInputService = game:GetService("UserInputService")
+		local runService = (game:GetService("RunService"));
+
+		local gui = script.Parent
+
+		local dragging
+		local dragInput
+		local dragStart
+		local startPos
+
+		local function Lerp(a, b, m)
+			return a + (b - a) * m
+		end;
+
+		local lastMousePos
+		local lastGoalPos
+		local DRAG_SPEED = (25); -- // The speed of the UI darg.
+		local function Update(dt)
+			if not (startPos) then return end;
+			if not (dragging) and (lastGoalPos) then
+				gui.Position = UDim2.new(startPos.X.Scale, Lerp(gui.Position.X.Offset, lastGoalPos.X.Offset, dt * DRAG_SPEED), startPos.Y.Scale, Lerp(gui.Position.Y.Offset, lastGoalPos.Y.Offset, dt * DRAG_SPEED))
+				return 
+			end;
+
+			local delta = (lastMousePos - UserInputService:GetMouseLocation())
+			local xGoal = (startPos.X.Offset - delta.X);
+			local yGoal = (startPos.Y.Offset - delta.Y);
+			lastGoalPos = UDim2.new(startPos.X.Scale, xGoal, startPos.Y.Scale, yGoal)
+			gui.Position = UDim2.new(startPos.X.Scale, Lerp(gui.Position.X.Offset, xGoal, dt * DRAG_SPEED), startPos.Y.Scale, Lerp(gui.Position.Y.Offset, yGoal, dt * DRAG_SPEED))
+		end;
+
+		gui.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = true
+				dragStart = input.Position
+				startPos = gui.Position
+				lastMousePos = UserInputService:GetMouseLocation()
+
+				input.Changed:Connect(function()
+					if input.UserInputState == Enum.UserInputState.End then
+						dragging = false
+					end
+				end)
+			end
+		end)
+
+		gui.InputChanged:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				dragInput = input
+			end
+		end)
+
+		runService.Heartbeat:Connect(Update)
+	end
+	coroutine.wrap(Drag)()
+	local function Intro()
+		local script = Instance.new('LocalScript', Flare)
+
+		local function Play(T)
+			script.Parent.Top.Position=UDim2.new(0.5, 0,-0.5, 0)
+			local SRV = game:GetService("TweenService")
+			local IMG = T; if T == nil then return end
+			local ROT = -14
+			local VAR = -1000
+			IMG.Rotation = ROT
+			local DEF = UDim2.new(0.5,VAR,0.5,0)
+			IMG.Position=DEF
+			local function Tween(a,b,c)
+				SRV:Create(a,TweenInfo.new(b,Enum.EasingStyle.Cubic,Enum.EasingDirection.InOut),c):Play()
+			end wait(1)
+			print("Started")
+			VAR = VAR+850
+			Tween(IMG,0.75,{Rotation=ROT})
+			Tween(IMG,0.75,{Position=UDim2.new(0.5,VAR,0.5,0)})wait(.5)
+			VAR = VAR+40
+			Tween(IMG,0.75,{Rotation=76})
+			Tween(IMG,0.75,{Position=UDim2.new(0.5,VAR,0.5,0)})wait(1)
+			VAR = VAR+40
+			Tween(IMG,0.75,{Rotation=165})
+			Tween(IMG,0.75,{Position=UDim2.new(0.5,VAR,0.5,0)})wait(1)
+			VAR = VAR+40
+			Tween(IMG,0.75,{Rotation=255})
+			Tween(IMG,0.75,{Position=UDim2.new(0.5,VAR,0.5,0)})wait(1)
+			VAR = VAR+40
+			Tween(IMG,0.75,{Rotation=345})
+			Tween(IMG,0.75,{Position=UDim2.new(0.5,VAR,0.5,0)})wait(1)
+			VAR = VAR+900
+			Tween(IMG,0.75,{Rotation=ROT})
+			Tween(IMG,0.75,{Position=UDim2.new(0.5,VAR,0.5,0)})wait(.5)
+			IMG:Destroy()
+			wait(1)
+			Tween(script.Parent.Top,1,{Position=UDim2.new(0.5, 0,0.378, 0)})
+			print("Ended")
+		end
+
+		Play(script.Parent.Roblox)
+	end
+	coroutine.wrap(Intro)()
+	local Tab = {}
+	function Tab.Tab(Head)
+		local Home = Instance.new("Frame")
+		local Refresh = Instance.new("ImageButton")
+		local Menu = Instance.new("ImageButton")
+		local Line = Instance.new("Frame")
+		local Items = Instance.new("ScrollingFrame")
+		local UIListLayout = Instance.new("UIListLayout")
+		Head = Instance.new("TextLabel")
+		Home.Name = "Home"
+		Home.Parent = Pages
+		Home.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Home.BackgroundTransparency = 1.000
+		Home.Size = UDim2.new(0, 393, 0, 198)
+		Refresh.Name = "Refresh"
+		Refresh.Parent = Home
+		Refresh.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Refresh.BackgroundTransparency = 1.000
+		Refresh.Position = UDim2.new(0.282442808, 0, 0.0505050421, 0)
+		Refresh.Size = UDim2.new(0, 15, 0, 15)
+		Refresh.Image = "http://www.roblox.com/asset/?id=3042225189"
+		Menu.Name = "Menu"
+		Menu.Parent = Home
+		Menu.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Menu.BackgroundTransparency = 1.000
+		Menu.Position = UDim2.new(0.213740468, 0, 0.0353535339, 0)
+		Menu.Size = UDim2.new(0, 21, 0, 21)
+		Menu.Image = "http://www.roblox.com/asset/?id=7347408509"
+		Line.Name = "Line"
+		Line.Parent = Home
+		Line.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Line.BorderColor3 = Color3.fromRGB(255, 255, 255)
+		Line.Position = UDim2.new(0.0300000999, 0, 0.170000017, 0)
+		Line.Size = UDim2.new(0, 115, 0, 0)
+		Items.Name = "Items"
+		Items.Parent = Home
+		Items.Active = true
+		Items.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Items.BackgroundTransparency = 1.000
+		Items.BorderSizePixel = 0
+		Items.Position = UDim2.new(0.0300000999, 0, 0.191999957, 0)
+		Items.Size = UDim2.new(0, 375, 0, 154)
+		Items.CanvasSize = UDim2.new(0, 0, 0, 0)
+		Items.ScrollBarThickness = 3
+		UIListLayout.Parent = Items
+		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+		Head.Name = "Head"
+		Head.Parent = Home
+		Head.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Head.BackgroundTransparency = 1.000
+		Head.Position = UDim2.new(0.0300000999, 0, 0.0353535339, 0)
+		Head.Size = UDim2.new(0, 83, 0, 21)
+		Head.Font = Enum.Font.GothamSemibold
+		Head.Text = Head
+		Head.TextColor3 = Color3.fromRGB(235, 235, 235)
+		Head.TextSize = 14.000
+		Head.TextXAlignment = Enum.TextXAlignment.Left
+		local function Refresh()
+			local script = Instance.new('LocalScript', Refresh)
+
+			local Container = script.Parent.Parent
+			local Parent = script.Parent.Parent.Parent
+
+			script.Parent.MouseButton1Up:Connect(function()
+
+				local Cloned = Container:Clone()
+				Cloned.Name = Container.Name
+				Cloned.Parent = game.Lighting
+
+				Container:Destroy(); --[ Remove The Frame. ]
+
+				wait(.1)
+
+				Cloned.Parent = Parent
+
+			end)
+		end
+		coroutine.wrap(Refresh)()
+		local function MenuOpen()
+			local script = Instance.new('LocalScript', Menu)
+
+			local Container = script.Parent.Parent;
+			local Menu = Container.Parent.Parent.TaskBar;
+
+			local Service = game:GetService("TweenService")
+			local function Tween(a, b)
+				Service:Create(a--[[ The Parenting, Location. ]], TweenInfo.new(.8, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), b --[[ The Ideal Purpose, The Mechncanic. ]]):Play()
+			end
+
+			script.Parent.MouseButton1Up:Connect(function()
+				for i,v in pairs(Container.Items:GetChildren()) do
+					if v:IsA("TextLabel") then
+						Tween(v,{TextTransparency=.5})
+					elseif v:IsA("TextButton") then
+						Tween(v,{TextTransparency=.5})
+					end
+				end
+				Tween(Container.Line,{BackgroundTransparency=.5})
+				Tween(Container.Refresh,{ImageTransparency=.5})
+				Tween(Container.Menu,{ImageTransparency=.5})
+				Tween(Container.Head,{TextTransparency=.5})
+				Menu:TweenSize(UDim2.new(),"In",Enum.EasingStyle.Cubic,.8)
+				for i,v in pairs(Menu.Items:GetChildren()) do
+					if v:IsA("TextButton") then
+						Tween(v, {TextTransparency=0})
+					end
+				end
+			end)
+		end
+		coroutine.wrap(MenuOpen)()
+		local Label = {}
+		function Label.Label(Text)
+			local Text = Instance.new("TextLabel")
+			Text.Name = "Text"
+			Text.Parent = Items
+			Text.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Text.BackgroundTransparency = 1.000
+			Text.Position = UDim2.new(0.0300000999, 0, 0.0353535339, 0)
+			Text.Size = UDim2.new(0, 374, 0, 21)
+			Text.Font = Enum.Font.GothamSemibold
+			Text.TextColor3 = Color3.fromRGB(235, 235, 235)
+			Text.Text = Text
+			Text.TextSize = 14.000
+			Text.TextXAlignment = Enum.TextXAlignment.Left
+		end
+		local Button = {}
+		function Button.Button(Text, Callback)
+			Callback = Callback or function() end
+			local Button = Instance.new("TextButton")
+			Button.Name = "Button"
+			Button.Parent = Items
+			Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Button.BackgroundTransparency = 1.000
+			Button.Position = UDim2.new(0, 0, 0.13636364, 0)
+			Button.Size = UDim2.new(0, 374, 0, 21)
+			Button.Font = Enum.Font.Gotham
+			Button.Text = Text
+			Button.TextColor3 = Color3.fromRGB(214, 214, 214)
+			Button.TextSize = 14.000
+			Button.TextXAlignment = Enum.TextXAlignment.Left
+			Button.MouseButton1Up:Connect(function()
+				pcall(Callback)
+			end)
+		end
+		return Button, Label
+	end
+	local SideButton = {}
+	function SideButton.Sbutton(Text, Parent, Callback)
+		Callback = Callback or function() end
+		local CON = Parent if Parent == nil then return end
+		local Side = Instance.new("TextButton")
+		Side.Name = "Home"
+		Side.Parent = Titems
+		Side.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Side.BackgroundTransparency = 1.000
+		Side.Size = UDim2.new(0, 113, 0, 23)
+		Side.Visible = false
+		Side.Font = Enum.Font.Gotham
+		Side.Text = "Home"
+		Side.TextColor3 = Color3.fromRGB(234, 234, 234)
+		Side.TextSize = 14.000
+		Side.TextTransparency = 1.000
+
+		local function Script()
+			local script = Instance.new('LocalScript', Side)
+
+			local Container = CON
+			local Menu = Menu
+
+			local Service = game:GetService("TweenService")
+			local function Tween(a, b)
+				Service:Create(a--[[ The Parenting, Location. ]], TweenInfo.new(.8, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), b --[[ The Ideal Purpose, The Mechncanic. ]]):Play()
+			end
+
+			script.Parent.MouseButton1Up:Connect(function()
+				Container.Menu.Visible = true
+				Container.Refresh.Visible = true
+				Container.Menu.ImageTransparency = .8
+				Container.Menu.ImageTransparency = .8
+				for i,v in pairs(Menu.Tiems:GetChildren()) do
+					if v:IsA("TextButton") then
+						Tween(v,{TextTransparency = 1})
+					end
+				end
+				wait(.5)
+				Tween(Menu,{Size=UDim2.new(0,0,0,198)})
+				for i,v in pairs(Container.Items:GetChildren()) do
+					if v:IsA("TextLabel") then
+						Tween(v,{TextTransparency=0})
+					end
+					if v:IsA("TextButton") then
+						Tween(v,{TextTransparency=0})
+					end
+				end
+				Tween(Container.Menu,{ImageTransparency=0})
+				Tween(Container.Refresh,{ImageTransparency=0})
+				Tween(Container.Head,{TextTransparency=0})
+				Tween(Container.Line,{BackgroundTransparency=0})
+				wait(.5)
+				script.Parent.Visible = false
+			end)
+		end
+		coroutine.wrap(Script)()
+	end
+	return Tab, SideButton
+end
